@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next"
 import prisma from "@/lib/prisma"
 import { authOptions } from "../../auth/[...nextauth]/route"
 
-export async function PUT(request: Request, { params }: { params: { productId: string } }) {
+export async function PUT(request: Request, context: { params: { productId: string } }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -28,7 +28,7 @@ export async function PUT(request: Request, { params }: { params: { productId: s
     const updatedItem = await prisma.cartItem.updateMany({
       where: {
         cartId: cart.id,
-        productId: params.productId,
+        productId: context.params.productId,  // Using context.params.productId here
       },
       data: { quantity },
     })
@@ -44,7 +44,7 @@ export async function PUT(request: Request, { params }: { params: { productId: s
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { productId: string } }) {
+export async function DELETE(request: Request, context: { params: { productId: string } }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -62,7 +62,7 @@ export async function DELETE(request: Request, { params }: { params: { productId
     const deletedItem = await prisma.cartItem.deleteMany({
       where: {
         cartId: cart.id,
-        productId: params.productId,
+        productId: context.params.productId,  // Using context.params.productId here
       },
     })
 
@@ -76,4 +76,3 @@ export async function DELETE(request: Request, { params }: { params: { productId
     return NextResponse.json({ error: "Failed to remove cart item" }, { status: 500 })
   }
 }
-
