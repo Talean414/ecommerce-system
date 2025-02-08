@@ -22,6 +22,7 @@ export default function UserDashboard() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
+  const [activeTab, setActiveTab] = useState<string>("overview"); // Default active tab
   const [userMetrics, setUserMetrics] = useState({
     totalOrders: 0,
     totalSpent: 0,
@@ -185,161 +186,156 @@ export default function UserDashboard() {
         </div>
       )}
 
-      {/* Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="flex justify-center space-x-2 mb-8">
-          <TabsTrigger value="overview" onClick={() => setActiveTab("overview")}>
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="orders" onClick={() => setActiveTab("orders")}>
-            Orders
-          </TabsTrigger>
-          <TabsTrigger value="wishlist" onClick={() => setActiveTab("wishlist")}>
-            Wishlist
-          </TabsTrigger>
-          <TabsTrigger value="browse" onClick={() => setActiveTab("browse")}>
-            Browse Products
-          </TabsTrigger>
-          <TabsTrigger value="cart" onClick={() => setActiveTab("cart")}>
-            Cart
-          </TabsTrigger>
-          <TabsTrigger
-            value="placeOrder"
-            onClick={() => setActiveTab("placeOrder")}
-            disabled={!isVerified} // Only verified users can place orders
-          >
-            Place Order
-          </TabsTrigger>
-        </TabsList>
+<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <TabsList className="flex justify-center space-x-2 mb-8">
+        <TabsTrigger value="overview">
+          Overview
+        </TabsTrigger>
+        <TabsTrigger value="orders">
+          Orders
+        </TabsTrigger>
+        <TabsTrigger value="wishlist">
+          Wishlist
+        </TabsTrigger>
+        <TabsTrigger value="browse">
+          Browse Products
+        </TabsTrigger>
+        <TabsTrigger value="cart">
+          Cart
+        </TabsTrigger>
+        <TabsTrigger value="placeOrder" disabled={!isVerified}>
+          Place Order
+        </TabsTrigger>
+      </TabsList>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Total Orders</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{userMetrics.totalOrders}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Total Spent</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">Ksh {userMetrics.totalSpent.toFixed(2)}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Wishlist Items</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{userMetrics.wishlistCount}</p>
-              </CardContent>
-            </Card>
-            {/* New Profile Overview Card */}
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Profile Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16">
-                  <AvatarImage src={user.image || ""} alt={user.name || ""} />
-                  <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-lg font-semibold">{user.name}</p>
-                  <p className="text-sm text-gray-600">{user.email}</p>
-                  {isVerified ? (
-                    <p className="text-green-600 font-bold">Verified Account</p>
-                  ) : (
-                    <p className="text-red-600 font-bold">Unverified Account</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Recent Orders</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OrderHistory limit={5} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Orders Tab */}
-        <TabsContent value="orders">
+      {/* Overview Tab */}
+      <TabsContent value="overview">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle>Order History</CardTitle>
+              <CardTitle>Total Orders</CardTitle>
             </CardHeader>
             <CardContent>
-              <OrderHistory />
+              <p className="text-3xl font-bold">{userMetrics.totalOrders}</p>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* Wishlist Tab */}
-        <TabsContent value="wishlist">
           <Card>
             <CardHeader>
-              <CardTitle>Your Wishlist</CardTitle>
+              <CardTitle>Total Spent</CardTitle>
             </CardHeader>
             <CardContent>
-              <WishlistItems />
+              <p className="text-3xl font-bold">Ksh {userMetrics.totalSpent.toFixed(2)}</p>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* Browse Products Tab */}
-        <TabsContent value="browse">
           <Card>
             <CardHeader>
-              <CardTitle>Browse Products</CardTitle>
+              <CardTitle>Wishlist Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
-                <SearchBar />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="md:col-span-1">
-                  <CategoryList />
-                </div>
-                <div className="md:col-span-3">
-                  <ProductList />
-                </div>
+              <p className="text-3xl font-bold">{userMetrics.wishlistCount}</p>
+            </CardContent>
+          </Card>
+          {/* New Profile Overview Card */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Profile Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center space-x-4">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={user.image || ""} alt={user.name || ""} />
+                <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-lg font-semibold">{user.name}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
+                {isVerified ? (
+                  <p className="text-green-600 font-bold">Verified Account</p>
+                ) : (
+                  <p className="text-red-600 font-bold">Unverified Account</p>
+                )}
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Recent Orders</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <OrderHistory limit={5} />
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-        {/* Cart Tab */}
-        <TabsContent value="cart">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Cart</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Cart />
-            </CardContent>
-          </Card>
-        </TabsContent>
+      {/* Orders Tab */}
+      <TabsContent value="orders">
+        <Card>
+          <CardHeader>
+            <CardTitle>Order History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <OrderHistory />
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-        {/* Place Order Tab */}
-        <TabsContent value="placeOrder">
-          {isVerified ? (
-            <PlaceOrderForm />
-          ) : (
-            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              <p>Please verify your account to place orders.</p>
+      {/* Wishlist Tab */}
+      <TabsContent value="wishlist">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Wishlist</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <WishlistItems />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Browse Products Tab */}
+      <TabsContent value="browse">
+        <Card>
+          <CardHeader>
+            <CardTitle>Browse Products</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <SearchBar />
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="md:col-span-1">
+                <CategoryList />
+              </div>
+              <div className="md:col-span-3">
+                <ProductList />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Cart Tab */}
+      <TabsContent value="cart">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Cart</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Cart />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Place Order Tab */}
+      <TabsContent value="placeOrder">
+        {isVerified ? (
+          <PlaceOrderForm />
+        ) : (
+          <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <p>Please verify your account to place orders.</p>
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
     </div>
   );
-}
+};

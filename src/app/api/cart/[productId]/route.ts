@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 
+// PUT Request Handler
 export async function PUT(request: Request, { params }: { params: { productId: string } }) {
   try {
     const session = await getServerSession(authOptions);
@@ -10,13 +11,16 @@ export async function PUT(request: Request, { params }: { params: { productId: s
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Parse request body
     const body = await request.json();
     const { quantity } = body;
 
+    // Validate quantity
     if (typeof quantity !== "number" || quantity < 1) {
       return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
     }
 
+    // Find user's cart
     const cart = await prisma.cart.findUnique({
       where: { userId: session.user.id },
     });
@@ -25,8 +29,8 @@ export async function PUT(request: Request, { params }: { params: { productId: s
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
+    // Update cart item
     const productId = parseInt(params.productId); // Convert productId to number
-
     const updatedItem = await prisma.cartitem.updateMany({
       where: {
         cartId: cart.id,
@@ -46,6 +50,7 @@ export async function PUT(request: Request, { params }: { params: { productId: s
   }
 }
 
+// DELETE Request Handler
 export async function DELETE(request: Request, { params }: { params: { productId: string } }) {
   try {
     const session = await getServerSession(authOptions);
@@ -53,6 +58,7 @@ export async function DELETE(request: Request, { params }: { params: { productId
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Find user's cart
     const cart = await prisma.cart.findUnique({
       where: { userId: session.user.id },
     });
@@ -61,8 +67,8 @@ export async function DELETE(request: Request, { params }: { params: { productId
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
+    // Delete cart item
     const productId = parseInt(params.productId); // Convert productId to number
-
     const deletedItem = await prisma.cartitem.deleteMany({
       where: {
         cartId: cart.id,
