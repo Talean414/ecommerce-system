@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cart {
+  id       Int        @id @default(autoincrement())
+  userId   Int        @unique(map: "Cart_userId_key")
+  user     user       @relation(fields: [userId], references: [id], map: "Cart_userId_fkey")
+  cartitem cartitem[]
+}
+
+model cartitem {
+  id        Int     @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int
+  cart      cart    @relation(fields: [cartId], references: [id], map: "CartItem_cartId_fkey")
+  product   product @relation(fields: [productId], references: [id], map: "CartItem_productId_fkey")
+
+  @@index([cartId], map: "CartItem_cartId_fkey")
+  @@index([productId], map: "CartItem_productId_fkey")
+}
+
+model category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique(map: "Category_name_key")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], map: "Notification_userId_fkey")
+
+  @@index([userId], map: "Notification_userId_fkey")
+}
+
+model order {
+  id        Int          @id @default(autoincrement())
+  userId    Int
+  status    order_status
+  total     Float
+  createdAt DateTime     @default(now())
+  updatedAt DateTime
+  user      user         @relation(fields: [userId], references: [id], map: "Order_userId_fkey")
+  orderitem orderitem[]
+  payment   payment?
+  shipping  shipping?
+
+  @@index([userId], map: "Order_userId_fkey")
+}
+
+model orderitem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     order   @relation(fields: [orderId], references: [id], map: "OrderItem_orderId_fkey")
+  product   product @relation(fields: [productId], references: [id], map: "OrderItem_productId_fkey")
+
+  @@index([orderId], map: "OrderItem_orderId_fkey")
+  @@index([productId], map: "OrderItem_productId_fkey")
+}
+
+model otp {
+  id        String   @id @default(uuid())
+  email     String   @unique(map: "Otp_email_key")
+  otp       String
+  expiresAt DateTime
+}
+
+model payment {
+  id        Int            @id @default(autoincrement())
+  orderId   Int            @unique(map: "Payment_orderId_key")
+  amount    Float
+  status    payment_status
+  method    String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime
+  order     order          @relation(fields: [orderId], references: [id], map: "Payment_orderId_fkey")
+}
+
+model product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String
+  price        Float
+  stock        Int
+  image        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  rating       Float          @default(0)
+  numReviews   Int            @default(0)
+  cartitem     cartitem[]
+  orderitem    orderitem[]
+  review       review[]
+  wishlistitem wishlistitem[]
+}
+
+model review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  userId    Int
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  product   product  @relation(fields: [productId], references: [id], map: "Review_productId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "Review_userId_fkey")
+
+  @@index([productId], map: "Review_productId_fkey")
+  @@index([userId], map: "Review_userId_fkey")
+}
+
+model shipping {
+  id         Int             @id @default(autoincrement())
+  orderId    Int             @unique(map: "Shipping_orderId_key")
+  address    String
+  city       String
+  country    String
+  postalCode String
+  status     shipping_status
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime
+  order      order           @relation(fields: [orderId], references: [id], map: "Shipping_orderId_fkey")
+}
+
+model user {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique(map: "User_email_key")
+  password     String
+  role         user_role      @default(CUSTOMER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  verified     Boolean        @default(false) // New field to track verification status
+  cart         cart?
+  notification notification[]
+  order        order[]
+  review       review[]
+  wishlistitem wishlistitem[]
+}
+
+model wishlistitem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+  product   product  @relation(fields: [productId], references: [id], map: "WishlistItem_productId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "WishlistItem_userId_fkey")
+
+  @@unique([userId, productId], map: "WishlistItem_userId_productId_key")
+  @@index([productId], map: "WishlistItem_productId_fkey")
+}
+
+enum order_status {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum payment_status {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum user_role {
+  ADMIN
+  CUSTOMER
+}
+
+enum shipping_status {
+  PENDING
+  SHIPPED
+  DELIVERED
+}
