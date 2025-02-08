@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -30,7 +30,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
         if (!isPasswordValid) {
           return null;
@@ -70,6 +73,8 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+// NextAuth API handler
 const handler = NextAuth(authOptions);
 
+// Only export GET and POST handlers
 export { handler as GET, handler as POST };
