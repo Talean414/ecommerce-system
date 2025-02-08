@@ -13,8 +13,6 @@ import { WishlistItems } from "@/components/WishlistItems";
 import { OrderHistory } from "@/components/OrderHistory";
 import { Cart } from "@/components/cart";
 import { PlaceOrderForm } from "@/components/PlaceOrderForm";
-import { ProfileManagement } from "@/components/ProfileManagement";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -24,7 +22,7 @@ export default function UserDashboard() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const [_activeTab, setActiveTab] = useState("overview");
   const [userMetrics, setUserMetrics] = useState({
     totalOrders: 0,
     totalSpent: 0,

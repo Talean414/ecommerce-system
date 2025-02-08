@@ -18,12 +18,8 @@ interface RegisterFormProps {
 export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRegistrationError }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm()
-  const { toast } = useToast()
+  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { toast } = useToast() // Now used properly
 
   const onSubmit = async (data) => {
     onRegistrationStart()
@@ -52,10 +48,22 @@ export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRe
         throw new Error(result.error)
       }
 
+      toast({
+        title: "Success",
+        description: "Registration successful! Redirecting...",
+      })
+
       onRegistrationComplete()
       router.push("/dashboard")
     } catch (error) {
       console.error("Registration error:", error)
+
+      toast({
+        title: "Registration Failed",
+        description: error.message || "An unexpected error occurred.",
+        variant: "destructive",
+      })
+
       onRegistrationError(error.message || "An unexpected error occurred during registration.")
     } finally {
       setIsLoading(false)
@@ -102,4 +110,3 @@ export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRe
     </form>
   )
 }
-

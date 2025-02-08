@@ -1,4 +1,3 @@
-// src/components/ProductDetails.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +11,19 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 
-export function ProductDetails({ product }) {
+// Define the product type
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+  rating: number;
+  numReviews: number;
+  description: string;
+  image?: string;
+};
+
+export function ProductDetails({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const { data: session } = useSession();
   const router = useRouter();
@@ -45,18 +56,26 @@ export function ProductDetails({ product }) {
         title: "Added to Cart",
         description: data.message || `${quantity} ${quantity > 1 ? "items" : "item"} added to your cart.`,
       });
-    } catch (error: any) {
-      console.error("Error adding to cart:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add item to cart. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error adding to cart:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to add item to cart. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        console.error("Unexpected error:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const buyNow = async () => {
-    // Optionally add the item to cart and then navigate to checkout
     await addToCart();
     router.push("/checkout");
   };
@@ -84,13 +103,22 @@ export function ProductDetails({ product }) {
         title: "Added to Wishlist",
         description: data.message || "Item added to your wishlist.",
       });
-    } catch (error: any) {
-      console.error("Error adding to wishlist:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add item to wishlist. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error adding to wishlist:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to add item to wishlist. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        console.error("Unexpected error:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -106,13 +134,22 @@ export function ProductDetails({ product }) {
       } else {
         throw new Error("Clipboard API not supported");
       }
-    } catch (error: any) {
-      console.error("Error sharing product:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to copy product link.",
-        variant: "destructive",
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error sharing product:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to copy product link.",
+          variant: "destructive",
+        });
+      } else {
+        console.error("Unexpected error:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

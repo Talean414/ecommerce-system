@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Trash2, Plus, Minus } from "lucide-react"
@@ -23,17 +23,14 @@ interface CartItem {
 }
 
 export function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]) // Ensures it's always an array
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
 
-  useEffect(() => {
-    fetchCartItems()
-  }, [])
-
-  const fetchCartItems = async () => {
+  // Wrap fetchCartItems in useCallback to prevent unnecessary re-renders
+  const fetchCartItems = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await fetch("/api/cart")
@@ -41,8 +38,6 @@ export function Cart() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
-
-      // Ensure data.items is an array before setting state
       setCartItems(Array.isArray(data.items) ? data.items : [])
     } catch (error) {
       console.error("Error fetching cart items:", error)
@@ -51,11 +46,15 @@ export function Cart() {
         description: "Failed to load cart items. Please try again.",
         variant: "destructive",
       })
-      setCartItems([]) // Fallback to empty array
+      setCartItems([])
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchCartItems()
+  }, [fetchCartItems])
 
   const incrementQuantity = async (productId: string) => {
     setIsUpdating(true)

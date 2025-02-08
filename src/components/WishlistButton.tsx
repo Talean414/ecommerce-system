@@ -1,27 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Heart } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-export function WishlistButton({ productId }) {
+export function WishlistButton({ productId }: { productId: string }) {
   const [isInWishlist, setIsInWishlist] = useState(false)
   const { data: session } = useSession()
   const router = useRouter()
+
+  // Define checkWishlist using useCallback to avoid dependency issues
+  const checkWishlist = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/wishlist?productId=${productId}`)
+      const data = await response.json()
+      setIsInWishlist(data.isInWishlist)
+    } catch (error) {
+      console.error("Error checking wishlist:", error)
+    }
+  }, [productId])
 
   useEffect(() => {
     if (session) {
       checkWishlist()
     }
-  }, [session, productId])
-
-  const checkWishlist = async () => {
-    const response = await fetch(`/api/wishlist?productId=${productId}`)
-    const data = await response.json()
-    setIsInWishlist(data.isInWishlist)
-  }
+  }, [session, checkWishlist])
 
   const toggleWishlist = async () => {
     if (!session) {
@@ -29,18 +34,20 @@ export function WishlistButton({ productId }) {
       return
     }
 
-    const response = await fetch('/api/wishlist', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ productId }),
-    })
+    try {
+      const response = await fetch('/api/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      })
 
-    if (response.ok) {
-      setIsInWishlist(!isInWishlist)
-    } else {
-      console.error('Failed to update wishlist')
+      if (response.ok) {
+        setIsInWishlist(!isInWishlist)
+      } else {
+        console.error('Failed to update wishlist')
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error)
     }
   }
 
@@ -55,4 +62,3 @@ export function WishlistButton({ productId }) {
     </Button>
   )
 }
-

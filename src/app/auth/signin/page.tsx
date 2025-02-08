@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
-import Link from "next/link"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 export default function SignInPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
-  const { toast } = useToast()
+  } = useForm();
+  const { toast } = useToast();
 
   const onSubmit = async (data) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email: data.email,
         password: data.password,
-      })
+      });
 
       if (result.error) {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
 
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto flex h-screen items-center justify-center">
@@ -82,7 +82,7 @@ export default function SignInPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/auth/register" className="text-primary hover:underline">
               Register here
             </Link>
@@ -90,6 +90,5 @@ export default function SignInPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-

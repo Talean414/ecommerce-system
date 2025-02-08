@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 
+// Define an interface for metadata items
+interface MetadataItem {
+  Name: string;
+  Value: string | number;
+}
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -13,9 +19,9 @@ export async function POST(req: Request) {
 
     if (stkCallback.ResultCode === 0) {
       // Extract metadata safely
-      const metadata = stkCallback.CallbackMetadata?.Item || [];
-      const getMetadataValue = (name: string) =>
-        metadata.find((item: any) => item.Name === name)?.Value || null;
+      const metadata: MetadataItem[] = stkCallback.CallbackMetadata?.Item || [];
+      const getMetadataValue = (name: string): string | number | null =>
+        metadata.find((item) => item.Name === name)?.Value || null; // ✅ No `any`
 
       const transaction = {
         MerchantRequestID: stkCallback.MerchantRequestID,

@@ -1,45 +1,46 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Newsletter() {
-  const [email, setEmail] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Subscribed!",
           description: "You've been added to our newsletter.",
-        })
-        setEmail("")
+        });
+        setEmail("");
       } else {
-        throw new Error("Failed to subscribe")
+        throw new Error("Failed to subscribe");
       }
     } catch (error) {
+      console.error(error); // ✅ Now using error to avoid ESLint warning
       toast({
         title: "Error",
         description: "Failed to subscribe. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <section className="py-16 bg-primary text-primary-foreground">
@@ -66,6 +67,5 @@ export default function Newsletter() {
         </form>
       </div>
     </section>
-  )
+  );
 }
-

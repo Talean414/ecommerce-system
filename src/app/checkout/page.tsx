@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image"; // ✅ Import next/image
 
 interface CartItem {
   id: number;
@@ -47,9 +48,14 @@ export default function CheckoutPage() {
           console.error("Invalid cart data format", data);
           setError("Cart data is not in the correct format.");
         }
-      } catch (error) {
-        console.error("Failed to fetch cart data", error);
-        setError("Failed to load cart data.");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Failed to fetch cart data:", error.message);
+          setError(error.message);
+        } else {
+          console.error("Unknown error fetching cart data");
+          setError("Failed to load cart data.");
+        }
       }
     };
 
@@ -92,18 +98,21 @@ export default function CheckoutPage() {
           body: JSON.stringify({
             phoneNumber: cleanPhone,
             amount: total,
-            callbackUrl: "https://4a39-197-232-62-136.ngrok-free.app " // Replace with your actual callback URL
+            callbackUrl: "https://4a39-197-232-62-136.ngrok-free.app", // Replace with actual callback URL
           }),
         });
-        
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.errorMessage || "M-Pesa payment failed");
 
         alert("Payment request sent. Please check your phone.");
         router.push("/orders");
-      } catch (error: any) {
-        setError(error.message || "Something went wrong.");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Something went wrong.");
+        }
       }
     } else {
       const cardError = validateCreditCard();
@@ -130,7 +139,13 @@ export default function CheckoutPage() {
         cartitems.map((item) => (
           <div key={item.id} className="flex justify-between border-b py-2">
             <div className="flex items-center">
-              <img src={item.product.image} alt={item.product.name} className="w-12 h-12 mr-2" />
+              <Image
+                src={item.product.image}
+                alt={item.product.name}
+                width={48} // Adjust as needed
+                height={48} // Adjust as needed
+                className="w-12 h-12 mr-2"
+              />
               <span>{item.product.name} (x{item.quantity})</span>
             </div>
             <span>KES {item.product.price * item.quantity}</span>

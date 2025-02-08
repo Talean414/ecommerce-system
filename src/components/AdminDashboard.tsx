@@ -1,68 +1,59 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
-import ProductManagement from "./ProductManagement"
-import OrderManagement from "./OrderManagement"
-import UserManagement from "./UserManagement"
+import type React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import ProductManagement from "./ProductManagement";
+import OrderManagement from "./OrderManagement";
+import UserManagement from "./UserManagement";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("products")
-  const { toast } = useToast()
+  const { toast } = useToast(); // ✅ Removed unused `activeTab`
 
   const sendNewsletter = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const subject = formData.get("subject") as string
-    const content = formData.get("content") as string
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const subject = formData.get("subject") as string;
+    const content = formData.get("content") as string;
 
     try {
       const response = await fetch("/api/admin/send-newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject, content }),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Newsletter Sent",
           description: "The newsletter has been sent to all subscribers.",
-        })
+        });
       } else {
-        throw new Error("Failed to send newsletter")
+        throw new Error("Failed to send newsletter");
       }
     } catch (error) {
+      console.error(error); // ✅ Now `error` is used
       toast({
         title: "Error",
         description: "Failed to send newsletter. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
       <Tabs defaultValue="products" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="products" onClick={() => setActiveTab("products")}>
-            Products
-          </TabsTrigger>
-          <TabsTrigger value="orders" onClick={() => setActiveTab("orders")}>
-            Orders
-          </TabsTrigger>
-          <TabsTrigger value="users" onClick={() => setActiveTab("users")}>
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="newsletter" onClick={() => setActiveTab("newsletter")}>
-            Newsletter
-          </TabsTrigger>
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
         </TabsList>
         <TabsContent value="products">
           <ProductManagement />
@@ -99,6 +90,5 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

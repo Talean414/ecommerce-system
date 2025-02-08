@@ -1,4 +1,4 @@
-import ProductList from '@/components/ProductList'
+import { ProductList } from '@/components/ProductList' // Use named import
 import { getProducts } from '@/lib/api'
 
 export default async function ProductsPage() {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useForm } from "react-hook-form"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -16,13 +16,9 @@ export default function ProductManagement() {
   const [editingProduct, setEditingProduct] = useState(null)
   const { toast } = useToast()
 
-  const { register, handleSubmit, reset, setValue } = useForm()
+  const { register, handleSubmit, reset } = useForm() // Removed unused `setValue`
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await fetch("/api/products")
@@ -41,7 +37,11 @@ export default function ProductManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast]) // Added `useCallback` to prevent unnecessary re-renders
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   const onSubmit = async (data) => {
     const formData = new FormData()
@@ -158,4 +158,3 @@ export default function ProductManagement() {
     </div>
   )
 }
-

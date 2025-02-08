@@ -1,44 +1,44 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect, useCallback } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 // Define Order type
 type order = {
-  id: number
-  createdAt: string
-  total: number
-  status: string
-}
+  id: number;
+  createdAt: string;
+  total: number;
+  status: string;
+};
 
 export function OrderHistory({ limit }: { limit?: number }) {
-  const [orders, setOrders] = useState<order[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [orders, setOrders] = useState<order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
-  const fetchOrders = async () => {
-    setIsLoading(true)
+  const fetchOrders = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/orders${limit ? `?limit=${limit}` : ''}`)
+      const response = await fetch(`/api/orders${limit ? `?limit=${limit}` : ""}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch orders')
+        throw new Error("Failed to fetch orders");
       }
-      const data = await response.json()
+      const data = await response.json();
 
       // Ensure we are getting an array from the API
-      setOrders(Array.isArray(data.orders) ? data.orders : [])
+      setOrders(Array.isArray(data.orders) ? data.orders : []);
     } catch (error) {
-      console.error('Error fetching orders:', error)
+      console.error("Error fetching orders:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  }, [limit]); // Add `limit` as a dependency to re-fetch when it changes
 
-  if (isLoading) return <div>Loading orders...</div>
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]); // Include `fetchOrders` in the dependency array
+
+  if (isLoading) return <div>Loading orders...</div>;
 
   return (
     <Table>
@@ -59,7 +59,7 @@ export function OrderHistory({ limit }: { limit?: number }) {
               <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
               <TableCell>${order.total.toFixed(2)}</TableCell>
               <TableCell>
-                <Badge variant={order.status === 'COMPLETED' ? 'secondary' : 'default'}>
+                <Badge variant={order.status === "COMPLETED" ? "secondary" : "default"}>
                   {order.status}
                 </Badge>
               </TableCell>
@@ -79,5 +79,5 @@ export function OrderHistory({ limit }: { limit?: number }) {
         )}
       </TableBody>
     </Table>
-  )
+  );
 }

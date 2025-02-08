@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { Session } from "next-auth"; // ✅ Import correct type
 
-async function getUserId(session: any): Promise<number | null> {
-  if (session?.user?.id) return session.user.id;
+async function getUserId(session: Session | null): Promise<number | null> { // ✅ Use explicit type
+  if (session?.user?.id) return Number(session.user.id); // Ensure it's a number
   if (session?.user?.email) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    
     const userId = await getUserId(session);
     if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

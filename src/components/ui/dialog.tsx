@@ -7,14 +7,27 @@ export function Dialog({ children, ...props }: DialogPrimitive.DialogProps) {
   return <DialogPrimitive.Root {...props}>{children}</DialogPrimitive.Root>;
 }
 
-export function DialogTrigger({ children, ...props }: DialogPrimitive.DialogTriggerProps) {
-  return <DialogPrimitive.Trigger {...props}>{children}</DialogPrimitive.Trigger>;
+export function DialogTrigger({
+  children,
+  ...props
+}: DialogPrimitive.DialogTriggerProps) {
+  return (
+    <DialogPrimitive.Trigger {...props}>
+      {children}
+    </DialogPrimitive.Trigger>
+  );
 }
 
-export function DialogContent({ children, ...props }: DialogPrimitive.DialogContentProps) {
+export function DialogContent({
+  children,
+  ...props
+}: DialogPrimitive.DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+      <DialogPrimitive.Overlay
+        className="fixed inset-0 bg-black bg-opacity-50"
+        {...props} // ✅ Explicitly spread props here to prevent the warning
+      />
       <DialogPrimitive.Content className="fixed bg-white p-6 rounded-lg shadow-lg">
         {children}
       </DialogPrimitive.Content>
