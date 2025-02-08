@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "@/lib/authOptions"
 import UserDashboard from "@/components/UserDashboard"
 import AdminDashboard from "@/components/AdminDashboard"
 

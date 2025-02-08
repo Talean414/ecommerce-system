@@ -1,12 +1,12 @@
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcryptjs"
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -17,26 +17,26 @@ const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email,
           },
-        })
+        });
 
         if (!user) {
-          return null
+          return null;
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
-        )
+        );
 
         if (!isPasswordValid) {
-          return null
+          return null;
         }
 
         return {
@@ -45,35 +45,30 @@ const authOptions = {
           name: user.name,
           role: user.role,
           verified: user.verified,
-        }
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
-        token.verified = user.verified
+        token.role = user.role;
+        token.verified = user.verified;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.role = token.role as string
-        session.user.verified = token.verified as boolean
+        session.user.role = token.role as string;
+        session.user.verified = token.verified as boolean;
       }
-      return session
+      return session;
     },
   },
   pages: {
     signIn: "/auth/signin",
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt", // Corrected type here
   },
-}
-
-const handler = NextAuth(authOptions)
-
-// Export the handler for GET and POST methods
-export { handler as GET, handler as POST }
+};
