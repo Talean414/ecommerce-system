@@ -22,7 +22,6 @@ export default function UserDashboard() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
-  const [_activeTab, setActiveTab] = useState("overview");
   const [userMetrics, setUserMetrics] = useState({
     totalOrders: 0,
     totalSpent: 0,
