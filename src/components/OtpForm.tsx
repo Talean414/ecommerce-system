@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 interface OtpFormProps {
-  onOtpSubmit: (otp: any) => void;
+  onOtpSubmit: (otp: string) => void; // Change from any to string
   onOtpError: (errorMessage: string) => void;
 }
 
@@ -62,9 +62,9 @@ const OtpForm: React.FC<OtpFormProps> = ({ onOtpSubmit, onOtpError }) => {
         // Show success modal before redirecting
         setShowSuccessModal(true);
         setTimeout(() => {
-                  onOtpSubmit(otp);
-                  router.push("/dashboard?verified=true");
-                }, 3500);
+          onOtpSubmit(otp);
+          router.push("/dashboard?verified=true");
+        }, 3500);
       } else {
         const errorMessage = data.error || "Invalid OTP.";
         setError(errorMessage);
@@ -111,7 +111,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ onOtpSubmit, onOtpError }) => {
             <Button type="submit">Verify OTP</Button>
           </div>
         </form>
-      </div>
+ </div>
     </div>
   );
 };

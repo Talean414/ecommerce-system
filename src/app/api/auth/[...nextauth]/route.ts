@@ -1,9 +1,8 @@
-import NextAuth, { AuthOptions, Session, User as NextAuthUser, } from "next-auth";
+import NextAuth, { AuthOptions, User as NextAuthUser  } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient, user_role } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
 
 const prisma = new PrismaClient();
 
@@ -17,7 +16,7 @@ type User = {
 };
 
 // Extend NextAuth's User type
-type CustomUser = NextAuthUser & User;
+type CustomUser  = NextAuthUser  & User;
 
 const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -60,18 +59,18 @@ const authOptions: AuthOptions = {
           name: user.name,
           role: user.role,
           verified: user.verified,
-        } as CustomUser;
+        } as CustomUser ;
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) { // Removed account, profile, isNewUser 
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = (user as CustomUser).role;
-        token.verified = (user as CustomUser).verified;
+        token.role = (user as CustomUser ).role;
+        token.verified = (user as CustomUser ).verified;
       }
       return token;
     },

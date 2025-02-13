@@ -35,12 +35,20 @@ export default function SignInPage() {
       }
 
       router.push("/dashboard");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Something went wrong",
-        variant: "destructive",
-      });
+    } catch (error: unknown) { // Change to unknown
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message || "Something went wrong",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
