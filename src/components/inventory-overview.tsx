@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export function InventoryOverview() {
   const inventory = [
@@ -7,7 +7,7 @@ export function InventoryOverview() {
     { name: 'Product B', stock: 50, status: 'Low Stock' },
     { name: 'Product C', stock: 0, status: 'Out of Stock' },
     { name: 'Product D', stock: 200, status: 'In Stock' },
-  ]
+  ];
 
   return (
     <Card>
@@ -21,8 +21,8 @@ export function InventoryOverview() {
               <span className="text-sm font-medium">{item.name}</span>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500">{item.stock} units</span>
-                <Badge variant={item.status === 'In Stock' ? 'success' : item.status === 'Low Stock' ? 'warning' : 'destructive'}>
-                  {item.status}
+                <Badge variant={item.status === 'In Stock' ? 'default' : item.status === 'Low Stock' ? 'secondary' : 'destructive'}>
+                  {item.status === 'In Stock' ? 'In Stock' : item.status === 'Low Stock' ? 'Low Stock' : 'Out of Stock'}
                 </Badge>
               </div>
             </li>
@@ -30,6 +30,5 @@ export function InventoryOverview() {
         </ul>
       </CardContent>
     </Card>
-  )
+  );
 }
-

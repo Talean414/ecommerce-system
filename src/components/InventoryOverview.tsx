@@ -1,6 +1,16 @@
 import { Badge } from '@/components/ui/badge'
 
-export function InventoryOverview({ lowStockProducts }) {
+interface Product {
+  id: number;
+  name: string;
+  stock: number;
+}
+
+interface InventoryOverviewProps {
+  lowStockProducts: Product[];
+}
+
+export function InventoryOverview({ lowStockProducts }: InventoryOverviewProps) {
   return (
     <ul className="space-y-4">
       {lowStockProducts.map((product) => (
@@ -8,7 +18,7 @@ export function InventoryOverview({ lowStockProducts }) {
           <span className="text-sm font-medium">{product.name}</span>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-500">{product.stock} units</span>
-            <Badge variant="warning">Low Stock</Badge>
+            <Badge variant="destructive">Low Stock</Badge>
           </div>
         </li>
       ))}

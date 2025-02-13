@@ -10,45 +10,74 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2 } from 'lucide-react'
 
-export function Checkout({ cartItems, total }) {
+interface CartItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface CheckoutProps {
+  cartItems: CartItem[];
+  total: number;
+}
+
+export function Checkout({ cartItems, total }: CheckoutProps) {
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
-  const onSubmit = async (data) => {
+  interface FormData {
+    name?: string;
+    email?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    postalCode?: string;
+    cardNumber?: string;
+    cardName?: string;
+    expiry?: string;
+    cvv?: string;
+  }
+
+  interface ApiResponse {
+    ok: boolean;
+  }
+
+  const onSubmit = async (data: FormData) => {
     if (step < 3) {
-      setStep(step + 1)
-      return
+      setStep(step + 1);
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      const response = await fetch('/api/orders', {
+      const response: ApiResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, cartItems, total }),
-      })
+      });
 
-      if (!response.ok) throw new Error('Failed to place order')
+      if (!response.ok) throw new Error('Failed to place order');
 
       toast({
         title: "Order Placed Successfully",
         description: "Thank you for your purchase!",
-      })
-      router.push('/order-confirmation')
+      });
+      router.push('/order-confirmation');
     } catch (error) {
-      console.error('Error placing order:', error)
+      console.error('Error placing order:', error);
       toast({
         title: "Error",
         description: "Failed to place order. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   const steps = [
     { title: "Shipping", fields: ['name', 'email', 'address', 'city', 'country', 'postalCode'] },
@@ -84,33 +113,33 @@ export function Checkout({ cartItems, total }) {
             {step === 1 && (
               <div className="space-y-4">
                 <Input {...register('name', { required: 'Name is required' })} placeholder="Full Name" />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                {errors.name && typeof errors.name.message === 'string' && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                 <Input {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })} placeholder="Email" type="email" />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                {errors.email && typeof errors.email.message === 'string' && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 <Input {...register('address', { required: 'Address is required' })} placeholder="Address" />
-                {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+                {errors.address && typeof errors.address.message === 'string' && <p className="text-red-500 text-sm">{errors.address.message}</p>}
                 <Input {...register('city', { required: 'City is required' })} placeholder="City" />
-                {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                {errors.city && typeof errors.city.message === 'string' && <p className="text-red-500 text-sm">{errors.city.message}</p>}
                 <Input {...register('country', { required: 'Country is required' })} placeholder="Country" />
-                {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                {errors.country && typeof errors.country.message === 'string' && <p className="text-red-500 text-sm">{errors.country.message}</p>}
                 <Input {...register('postalCode', { required: 'Postal Code is required' })} placeholder="Postal Code" />
-                {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
+                {errors.postalCode && typeof errors.postalCode.message === 'string' && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
               </div>
             )}
             {step === 2 && (
               <div className="space-y-4">
                 <Input {...register('cardNumber', { required: 'Card Number is required', pattern: { value: /^\d{16}$/, message: 'Invalid card number' } })} placeholder="Card Number" />
-                {errors.cardNumber && <p className="text-red-500 text-sm">{errors.cardNumber.message}</p>}
+                {errors.cardNumber && typeof errors.cardNumber.message === 'string' && <p className="text-red-500 text-sm">{errors.cardNumber.message}</p>}
                 <Input {...register('cardName', { required: 'Name on Card is required' })} placeholder="Name on Card" />
-                {errors.cardName && <p className="text-red-500 text-sm">{errors.cardName.message}</p>}
+                {errors.cardName && typeof errors.cardName.message === 'string' && <p className="text-red-500 text-sm">{errors.cardName.message}</p>}
                 <div className="flex space-x-4">
                   <div className="flex-1">
                     <Input {...register('expiry', { required: 'Expiry is required', pattern: { value: /^(0[1-9]|1[0-2])\/\d{2}$/, message: 'Invalid expiry date (MM/YY)' } })} placeholder="MM/YY" />
-                    {errors.expiry && <p className="text-red-500 text-sm">{errors.expiry.message}</p>}
+                    {errors.expiry && typeof errors.expiry.message === 'string' && <p className="text-red-500 text-sm">{errors.expiry.message}</p>}
                   </div>
                   <div className="flex-1">
                     <Input {...register('cvv', { required: 'CVV is required', pattern: { value: /^\d{3,4}$/, message: 'Invalid CVV' } })} placeholder="CVV" />
-                    {errors.cvv && <p className="text-red-500 text-sm">{errors.cvv.message}</p>}
+                    {errors.cvv && typeof errors.cvv.message === 'string' && <p className="text-red-500 text-sm">{errors.cvv.message}</p>}
                   </div>
                 </div>
               </div>

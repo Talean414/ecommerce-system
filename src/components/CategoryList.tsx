@@ -3,9 +3,14 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+type Category = {
+  id: string
+  name: string
+}
+
 export function CategoryList() {
-  const [categories, setCategories] = useState([])
-  const [error, setError] = useState(null)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchCategories() {
@@ -47,4 +52,3 @@ export function CategoryList() {
     </div>
   )
 }
-

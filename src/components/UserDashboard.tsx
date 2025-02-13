@@ -48,17 +48,23 @@ export default function UserDashboard() {
   }, [session]);
 
   // Check URL for query parameter after OTP verification and update local verification state
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("verified") === "true") {
-      setIsVerified(true);
-      setShowSuccessModal(true);
-      // Remove the query parameter without a full page reload
-      router.replace("/dashboard", undefined, { shallow: true });
-      // Hide the success modal after 3.5 seconds
-      setTimeout(() => setShowSuccessModal(false), 3500);
-    }
-  }, [router]);
+useEffect(() => {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get("verified") === "true") {
+    setIsVerified(true);
+    setShowSuccessModal(true);
+
+    // Remove "verified" query parameter without a full page reload
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("verified");
+
+    router.push(`/dashboard?${newParams.toString()}`);
+
+    // Hide the success modal after 3.5 seconds
+    setTimeout(() => setShowSuccessModal(false), 3500);
+  }
+}, [router]);
+
 
   // Function to fetch user metrics
   const fetchUserMetrics = async () => {
@@ -128,7 +134,7 @@ export default function UserDashboard() {
   }
 
   // At this point, session is available
-  const user = session.user;
+  const user = session?.user;
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fadeIn relative">
@@ -155,23 +161,27 @@ export default function UserDashboard() {
       )}
 
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-gradient">Welcome, {user.name}</h1>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={toggleTheme}
-            className="p-2 bg-gray-200 dark:bg-gray-800 rounded-full transition"
-          >
-            {theme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-          </button>
-          <Button variant="ghost" className="p-0" onClick={() => router.push("/profile")}>
-            <Avatar>
-              <AvatarImage src={user.image || ""} alt={user.name || ""} />
-              <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </div>
-      </div>
+{user && (
+  <div className="flex justify-between items-center mb-8">
+    <h1 className="text-4xl font-bold text-gradient">
+      Welcome, {user.name ?? "User"}
+    </h1>
+    <div className="flex items-center space-x-4">
+      <button
+        onClick={toggleTheme}
+        className="p-2 bg-gray-200 dark:bg-gray-800 rounded-full transition"
+      >
+        {theme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+      </button>
+      <Button variant="ghost" className="p-0" onClick={() => router.push("/profile")}>
+        <Avatar>
+          <AvatarImage src={user.image ?? ""} alt={user.name ?? "User"} />
+          <AvatarFallback>{user.name?.[0] ?? "U"}</AvatarFallback>
+        </Avatar>
+      </Button>
+    </div>
+  </div>
+)}
 
       {/* Verification Notice Banner (only for unverified users) */}
       {!isVerified && (
@@ -236,26 +246,29 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
           {/* New Profile Overview Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center space-x-4">
-              <Avatar className="w-16 h-16">
-                <AvatarImage src={user.image || ""} alt={user.name || ""} />
-                <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-lg font-semibold">{user.name}</p>
-                <p className="text-sm text-gray-600">{user.email}</p>
-                {isVerified ? (
-                  <p className="text-green-600 font-bold">Verified Account</p>
-                ) : (
-                  <p className="text-red-600 font-bold">Unverified Account</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {user && (
+  <Card className="md:col-span-2">
+    <CardHeader>
+      <CardTitle>Profile Overview</CardTitle>
+    </CardHeader>
+    <CardContent className="flex items-center space-x-4">
+      <Avatar className="w-16 h-16">
+        <AvatarImage src={user.image ?? ""} alt={user.name ?? "User"} />
+        <AvatarFallback>{user.name?.[0] ?? "U"}</AvatarFallback>
+      </Avatar>
+      <div>
+        <p className="text-lg font-semibold">{user.name ?? "User"}</p>
+        <p className="text-sm text-gray-600">{user.email ?? "No email"}</p>
+        {isVerified ? (
+          <p className="text-green-600 font-bold">Verified Account</p>
+        ) : (
+          <p className="text-red-600 font-bold">Unverified Account</p>
+        )}
+      </div>
+    </CardContent>
+  </Card>
+)}
+
         </div>
         <Card className="mt-8">
           <CardHeader>
@@ -280,16 +293,17 @@ export default function UserDashboard() {
       </TabsContent>
 
       {/* Wishlist Tab */}
-      <TabsContent value="wishlist">
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Wishlist</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <WishlistItems />
-          </CardContent>
-        </Card>
-      </TabsContent>
+<TabsContent value="wishlist">
+  <Card>
+    <CardHeader>
+      <CardTitle>Your Wishlist</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <WishlistItems items={[]} onUpdateWishlist={() => {}} />
+    </CardContent>
+  </Card>
+</TabsContent>
+
 
       {/* Browse Products Tab */}
       <TabsContent value="browse">

@@ -10,66 +10,73 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect } from "react"
 
 export function ProfileManagement() {
   const { data: session, update } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { register, handleSubmit, setValue, watch } = useForm()
+  const { register, handleSubmit, setValue, watch } = useForm<FormData>()
   const { toast } = useToast()
 
-  useState(() => {
+  useEffect(() => {
     if (session?.user) {
-      setValue("name", session.user.name)
-      setValue("email", session.user.email)
+      setValue("name", session.user.name || "")
+      setValue("email", session.user.email || "")
     }
   }, [session, setValue])
 
-  const onSubmit = async (data) => {
-    setIsLoading(true)
+  interface FormData {
+    name: string;
+    email: string;
+    image: FileList;
+  }
+
+  const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
     try {
-      const formData = new FormData()
-      formData.append("name", data.name)
-      formData.append("email", data.email)
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
       if (data.image[0]) {
-        formData.append("image", data.image[0])
+        formData.append("image", data.image[0]);
       }
 
       const response = await fetch("/api/user/profile", {
         method: "PUT",
         body: formData,
-      })
+      });
 
-      const contentType = response.headers.get("content-type")
+      const contentType = response.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
-        const result = await response.json()
+        const result = await response.json();
         if (!response.ok) {
-          throw new Error(result.error || "Failed to update profile")
+          throw new Error(result.error || "Failed to update profile");
         }
-        await update(result)
+        await update(result);
 
         toast({
           title: "Profile Updated",
           description: "Your profile has been successfully updated.",
-        })
+        });
 
-        router.refresh()
+        router.refresh();
       } else {
-        const text = await response.text()
-        console.error("Unexpected response:", text)
-        throw new Error("Unexpected response from server")
+        const text = await response.text();
+        console.error("Unexpected response:", text);
+        throw new Error("Unexpected response from server");
       }
     } catch (error) {
-      console.error("Error updating profile:", error)
+      console.error("Error updating profile:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update profile. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const profileImage = watch("image")
 
@@ -83,7 +90,7 @@ export function ProfileManagement() {
           <div className="flex items-center space-x-4">
             <Avatar className="w-24 h-24">
               <AvatarImage
-                src={profileImage ? URL.createObjectURL(profileImage[0]) : session?.user?.image}
+                src={profileImage ? URL.createObjectURL(profileImage[0]) : session?.user?.image || undefined}
                 alt={session?.user?.name || "User"}
               />
               <AvatarFallback>{session?.user?.name?.[0] || "U"}</AvatarFallback>
@@ -115,3 +122,5 @@ export function ProfileManagement() {
     </Card>
   )
 }
+
+// Removed conflicting local declaration of useEffect

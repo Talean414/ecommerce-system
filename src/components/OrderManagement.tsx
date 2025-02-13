@@ -3,7 +3,16 @@
 import { useState, useEffect } from 'react'
 
 export default function OrderManagement() {
-  const [orders, setOrders] = useState([])
+  interface Order {
+    id: number;
+    user: {
+      name: string;
+    };
+    total: number;
+    status: string;
+  }
+
+  const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

@@ -4,7 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 
-export default function UserProfile({ user }) {
+interface User {
+  name: string;
+  email: string;
+}
+
+export default function UserProfile({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -14,7 +19,12 @@ export default function UserProfile({ user }) {
     },
   })
 
-  const onSubmit = async (data) => {
+  interface FormData {
+    name: string;
+    email: string;
+  }
+
+  const onSubmit = async (data: FormData) => {
     const response = await fetch('/api/user/profile', {
       method: 'PUT',
       headers: {

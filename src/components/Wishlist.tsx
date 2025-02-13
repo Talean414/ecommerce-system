@@ -4,35 +4,50 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Trash2, ShoppingCart } from 'lucide-react'
 
-export function Wishlist() {
-  const [wishlistItems, setWishlistItems] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+// Define the WishlistItem interface outside the component
+interface WishlistItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
+// Define the props for the Wishlist component
+interface WishlistProps {
+  items?: WishlistItem[]; // Optional prop for items
+  onUpdateWishlist?: () => void; // Optional callback prop
+}
+
+export function Wishlist({ items = [], onUpdateWishlist }: WishlistProps) {
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>(items);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchWishlistItems()
-  }, [])
+    fetchWishlistItems();
+  }, []);
 
   const fetchWishlistItems = async () => {
-    setIsLoading(true)
-    const response = await fetch('/api/wishlist')
-    const data = await response.json()
-    setWishlistItems(data)
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    const response = await fetch('/api/wishlist');
+    const data = await response.json();
+    setWishlistItems(data);
+    setIsLoading(false);
+  };
 
-  const removeFromWishlist = async (productId) => {
+  const removeFromWishlist = async (productId: number): Promise<void> => {
     const response = await fetch(`/api/wishlist/${productId}`, {
       method: 'DELETE',
-    })
+    });
 
     if (response.ok) {
-      fetchWishlistItems()
+      fetchWishlistItems();
+      if (onUpdateWishlist) onUpdateWishlist(); // Call the callback if provided
     } else {
-      console.error('Failed to remove item from wishlist')
+      console.error('Failed to remove item from wishlist');
     }
-  }
+  };
 
-  const addToCart = async (productId) => {
+  const addToCart = async (productId: number): Promise<void> => {
     const response = await fetch('/api/cart', {
       method: 'POST',
       headers: {
@@ -42,17 +57,16 @@ export function Wishlist() {
         productId,
         quantity: 1,
       }),
-    })
+    });
 
     if (response.ok) {
-      // Optionally remove from wishlist after adding to cart
-      await removeFromWishlist(productId)
+      await removeFromWishlist(productId);
     } else {
-      console.error('Failed to add item to cart')
+      console.error('Failed to add item to cart');
     }
-  }
+  };
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>
+  if (isLoading) return <div className="text-center py-10">Loading...</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -78,6 +92,7 @@ export function Wishlist() {
                   <button
                     onClick={() => removeFromWishlist(item.id)}
                     className="text-red-500 hover:text-red-700"
+                    title="Remove from wishlist"
                   >
                     <Trash2 />
                   </button>
@@ -95,6 +110,5 @@ export function Wishlist() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

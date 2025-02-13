@@ -4,12 +4,25 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Star } from 'lucide-react'
 
-export function ReviewForm({ productId, onReviewSubmitted }) {
-  const [rating, setRating] = useState(0)
-  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+interface ReviewFormProps {
+  productId: string;
+  onReviewSubmitted: () => void;
+}
 
-  const onSubmit = async (data) => {
-    const response = await fetch('/api/reviews', {
+export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
+  const [rating, setRating] = useState(0)
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
+
+  interface FormData {
+    comment: string;
+  }
+
+  interface ApiResponse {
+    ok: boolean;
+  }
+
+  const onSubmit = async (data: FormData) => {
+    const response: ApiResponse = await fetch('/api/reviews', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,6 +54,7 @@ export function ReviewForm({ productId, onReviewSubmitted }) {
               type="button"
               onClick={() => setRating(star)}
               className={`focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+              title={`Rate ${star} star${star > 1 ? 's' : ''}`}
             >
               <Star className="h-6 w-6" />
             </button>

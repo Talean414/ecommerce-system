@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/authOptions"
+import { authOptions } from "@/lib/authOptions";
 import { writeFile } from "fs/promises";
 import path from "path";
 
+// Fetch all products (GET)
 export async function GET() {
   try {
     const products = await prisma.product.findMany();
@@ -15,6 +16,7 @@ export async function GET() {
   }
 }
 
+// Create a new product (POST)
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") {
@@ -24,8 +26,8 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const name = formData.get("name") as string;
-    const price = Number.parseFloat(formData.get("price") as string);
-    const stock = Number.parseInt(formData.get("stock") as string);
+    const price = Number(formData.get("price"));
+    const stock = Number(formData.get("stock"));
     const description = formData.get("description") as string;
     const image = formData.get("image") as File;
 

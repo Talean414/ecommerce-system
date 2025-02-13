@@ -1,5 +1,3 @@
-// src/components/OtpForm.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const OtpForm: React.FC = () => {
+interface OtpFormProps {
+  onOtpSubmit: (otp: any) => void;
+  onOtpError: (errorMessage: string) => void;
+}
+
+const OtpForm: React.FC<OtpFormProps> = ({ onOtpSubmit, onOtpError }) => {
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -31,13 +34,17 @@ const OtpForm: React.FC = () => {
 
     // Validate OTP length
     if (otp.length !== 6) {
-      setError("OTP must be 6 digits.");
+      const errorMessage = "OTP must be 6 digits.";
+      setError(errorMessage);
+      onOtpError(errorMessage);
       return;
     }
 
     // Validate OTP is all numeric
     if (!/^\d+$/.test(otp)) {
-      setError("OTP must be numeric.");
+      const errorMessage = "OTP must be numeric.";
+      setError(errorMessage);
+      onOtpError(errorMessage);
       return;
     }
 
@@ -55,14 +62,19 @@ const OtpForm: React.FC = () => {
         // Show success modal before redirecting
         setShowSuccessModal(true);
         setTimeout(() => {
-          router.push("/dashboard?verified=true");
-        }, 3500);
+                  onOtpSubmit(otp);
+                  router.push("/dashboard?verified=true");
+                }, 3500);
       } else {
-        setError(data.error || "Invalid OTP.");
+        const errorMessage = data.error || "Invalid OTP.";
+        setError(errorMessage);
+        onOtpError(errorMessage);
       }
     } catch (error) {
       console.error("An error occurred while verifying OTP:", error);
-      setError("An unexpected error occurred. Please try again.");
+      const errorMessage = "An unexpected error occurred. Please try again.";
+      setError(errorMessage);
+      onOtpError(errorMessage);
     }
   };
 

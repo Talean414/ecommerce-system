@@ -8,8 +8,22 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-export function ProductList() {
-  const [products, setProducts] = useState([]);
+// Define a TypeScript interface for products
+interface Product {
+  id: string; // Assuming Prisma uses string for IDs
+  name: string;
+  price: number;
+  stock: number;
+  image?: string;
+}
+
+// Accept products as a prop
+interface ProductListProps {
+  products?: Product[]; // Optional prop
+}
+
+export function ProductList({ products: initialProducts }: ProductListProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -17,21 +31,20 @@ export function ProductList() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const category = searchParams.get("category") || "";
-  const search = searchParams.get("search") || "";
+  const category = searchParams?.get("category") ?? "";
+  const search = searchParams?.get("search") ?? "";
 
-  // ✅ Use useCallback to avoid recreation of fetchProducts
+  // ✅ Fetch Products
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(`/api/products?page=${currentPage}&category=${category}&search=${search}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
       const data = await response.json();
-      setProducts(data.products || []);
-      setTotalPages(data.totalPages || 1);
+      setProducts(data?.products || []);
+      setTotalPages(data?.totalPages || 1);
     } catch (err) {
       console.error("Error fetching products:", err);
       setError("Failed to load products");
@@ -41,10 +54,13 @@ export function ProductList() {
   }, [currentPage, category, search]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]); // ✅ Now fetchProducts is included in the dependency array
+    if (!initialProducts) {
+      fetchProducts();
+    }
+  }, [fetchProducts, initialProducts]);
 
-  const addToCart = async (productId: number) => {
+  // ✅ Add to Cart Function
+  const addToCart = async (productId: string) => {
     try {
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -52,21 +68,17 @@ export function ProductList() {
         body: JSON.stringify({ productId, quantity: 1 }),
       });
 
-      if (response.ok) {
-        toast({ title: "Added to cart", description: "The item has been added to your cart." });
-      } else {
-        throw new Error("Failed to add item to cart");
-      }
+      if (!response.ok) throw new Error("Failed to add item to cart");
+
+      toast({ title: "Added to cart", description: "The item has been added to your cart." });
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({ title: "Error", description: "Failed to add item to cart. Please try again.", variant: "destructive" });
     }
   };
 
-  if (error) {
-    return <div className="text-center py-10 text-red-500">{error}</div>;
-  }
-
+  // ✅ UI Rendering
+  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
   if (isLoading) return <div className="text-center py-10">Loading...</div>;
 
   return (
@@ -79,9 +91,8 @@ export function ProductList() {
                 <Image
                   src={product.image || "/placeholder.svg"}
                   alt={product.name}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform duration-300 group-hover:scale-110"
+                  fill={true} // Updated Next.js image prop
+                  className="transition-transform duration-300 group-hover:scale-110 object-cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="flex space-x-2">
@@ -109,6 +120,7 @@ export function ProductList() {
           <div className="col-span-3 text-center py-10">No products found.</div>
         )}
       </div>
+      {/* Pagination */}
       <div className="mt-8 flex justify-center">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button

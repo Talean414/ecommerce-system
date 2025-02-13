@@ -10,10 +10,16 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 export function PlaceOrderForm() {
   const [isLoading, setIsLoading] = useState(false)
-  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<OrderData>()
   const { toast } = useToast()
 
-  const onSubmit = async (data) => {
+  interface OrderData {
+    productName: string;
+    quantity: number;
+    shippingAddress: string;
+  }
+
+  const onSubmit = async (data: OrderData) => {
     setIsLoading(true)
     try {
       const response = await fetch('/api/orders', {

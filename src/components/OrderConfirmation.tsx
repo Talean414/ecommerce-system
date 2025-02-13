@@ -7,8 +7,16 @@ import { CheckCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+interface Order {
+  id: string;
+  total: number;
+  status: string;
+  orderItems: { id: string; product: { name: string }; quantity: number; price: number }[];
+  shipping: { address: string; city: string; country: string; postalCode: string };
+}
+
 export function OrderConfirmation() {
-  const [order, setOrder] = useState(null)
+  const [order, setOrder] = useState<Order | null>(null)
   const router = useRouter()
 
   useEffect(() => {

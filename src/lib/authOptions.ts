@@ -21,8 +21,14 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
+          where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            verified: true,
+            password: true, // ✅ No emailVerified
           },
         });
 
@@ -30,21 +36,17 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
           return null;
         }
 
         return {
-          id: user.id,
+          id: user.id.toString(),
           email: user.email,
           name: user.name,
-          role: user.role,
-          verified: user.verified,
+          role: user.role || "USER",
+          verified: user.verified ?? false,
         };
       },
     }),
@@ -52,6 +54,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
         token.verified = user.verified;
       }
@@ -59,8 +62,9 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.role = token.role as string;
-        session.user.verified = token.verified as boolean;
+        session.user.id = token.id as string;
+        session.user.role = (token.role as string) || "USER";
+        session.user.verified = (token.verified as boolean) ?? false;
       }
       return session;
     },
@@ -69,6 +73,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   session: {
-    strategy: "jwt", // Corrected type here
+    strategy: "jwt",
   },
 };

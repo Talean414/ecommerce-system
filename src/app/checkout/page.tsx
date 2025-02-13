@@ -40,7 +40,7 @@ export default function CheckoutPage() {
 
           // Calculate total price
           const totalPrice = data.items.reduce(
-            (sum, item) => sum + item.product.price * item.quantity,
+            (sum: number, item: { product: { price: number; }; quantity: number; }) => sum + item.product.price * item.quantity,
             0
           );
           setTotal(totalPrice);

@@ -32,7 +32,7 @@ export function RecentOrders() {
                 <TableCell>{order.customer}</TableCell>
                 <TableCell>{order.total}</TableCell>
                 <TableCell>
-                  <Badge variant={order.status === 'Completed' ? 'success' : 'default'}>
+                  <Badge variant={order.status === 'Completed' ? 'secondary' : 'default'}>
                     {order.status}
                   </Badge>
                 </TableCell>

@@ -189,7 +189,7 @@ export function ProductDetails({ product }: { product: Product }) {
               </div>
               <p className="text-gray-600 mb-6">{product.description}</p>
               <div className="flex items-center mb-6">
-                <Badge variant={product.stock > 0 ? "success" : "destructive"}>
+                <Badge variant={product.stock > 0 ? "default" : "destructive"}>
                   {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
                 </Badge>
               </div>

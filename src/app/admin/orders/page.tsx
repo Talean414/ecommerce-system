@@ -1,19 +1,20 @@
-import { Metadata } from 'next'
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/authOptions"
-import { AdminOrderManagement } from "@/components/AdminOrderManagement"
+import { Metadata } from "next";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/authOptions";
+import { AdminOrderManagement } from "@/components/AdminOrderManagement";
 
 export const metadata: Metadata = {
-  title: 'Order Management - Admin Dashboard',
-  description: 'Manage and process customer orders.',
-}
+  title: "Order Management - Admin Dashboard",
+  description: "Manage and process customer orders.",
+};
 
 export default async function AdminOrdersPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/auth/signin?callbackUrl=/admin/orders")
+  // Ensure only admins can access this page
+  if (!session || session.user?.role !== "ADMIN") {
+    redirect("/auth/signin?callbackUrl=/admin/orders");
   }
 
   return (
@@ -21,6 +22,7 @@ export default async function AdminOrdersPage() {
       <h1 className="text-3xl font-bold mb-8">Order Management</h1>
       <AdminOrderManagement />
     </div>
-  )
+  );
 }
+
 

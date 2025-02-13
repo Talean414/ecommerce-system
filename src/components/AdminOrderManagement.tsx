@@ -14,8 +14,32 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+// Define the Order type
+interface Order {
+  id: number;
+  user: {
+    name: string;
+  };
+  createdAt: string;
+  total: number;
+  status: string;
+  orderItems: {
+    id: number;
+    product: {
+      name: string;
+    };
+    quantity: number;
+  }[];
+  shipping: {
+    address: string;
+    city: string;
+    country: string;
+    postalCode: string;
+  };
+}
+
 export function AdminOrderManagement() {
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState<Order[]>([]) // Define state type
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -29,7 +53,7 @@ export function AdminOrderManagement() {
       if (!response.ok) {
         throw new Error('Failed to fetch orders')
       }
-      const data = await response.json()
+      const data: Order[] = await response.json() // Ensure correct type
       setOrders(data)
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -38,7 +62,7 @@ export function AdminOrderManagement() {
     }
   }
 
-  const updateOrderStatus = async (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId: number, newStatus: string) => { // Add types
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: 'PATCH',
@@ -78,7 +102,7 @@ export function AdminOrderManagement() {
             <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
             <TableCell>${order.total.toFixed(2)}</TableCell>
             <TableCell>
-              <Badge variant={order.status === 'COMPLETED' ? 'success' : 'default'}>
+              <Badge variant={order.status === 'COMPLETED' ? 'default' : 'secondary'}>
                 {order.status}
               </Badge>
             </TableCell>
@@ -139,4 +163,3 @@ export function AdminOrderManagement() {
     </Table>
   )
 }
-

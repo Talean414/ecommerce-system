@@ -1,7 +1,20 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 
-export function RecentOrders({ orders }) {
+interface Order {
+  id: number;
+  user: {
+    name: string;
+  };
+  total: number;
+  status: string;
+}
+
+interface RecentOrdersProps {
+  orders: Order[];
+}
+
+export function RecentOrders({ orders }: RecentOrdersProps) {
   return (
     <Table>
       <TableHeader>
@@ -19,7 +32,7 @@ export function RecentOrders({ orders }) {
             <TableCell>{order.user.name}</TableCell>
             <TableCell>${order.total.toFixed(2)}</TableCell>
             <TableCell>
-              <Badge variant={order.status === 'COMPLETED' ? 'success' : 'default'}>
+              <Badge variant={order.status === 'COMPLETED' ? 'secondary' : 'default'}>
                 {order.status}
               </Badge>
             </TableCell>

@@ -1,40 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { signIn } from "next-auth/react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { LoadingSpinner } from "@/components/LoadingSpinner"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from "react-hook-form"; // ✅ Fixed missing import
+import { signIn } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface RegisterFormProps {
-  onRegistrationStart: () => void
-  onRegistrationComplete: () => void
-  onRegistrationError: (error: string) => void
+  onRegistrationStart: () => void;
+  onRegistrationComplete: () => void;
+  onRegistrationError: (error: string) => void;
+}
+
+interface RegistrationFormData {
+  name: string;
+  email: string;
+  password: string;
 }
 
 export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRegistrationError }: RegisterFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { register, handleSubmit, formState: { errors } } = useForm()
-  const { toast } = useToast() // Now used properly
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationFormData>(); // ✅ Fixed implicit 'any'
+  const { toast } = useToast(); // ✅ Used correctly
 
-  const onSubmit = async (data) => {
-    onRegistrationStart()
-    setIsLoading(true)
+  const onSubmit: SubmitHandler<RegistrationFormData> = async (data) => {
+    onRegistrationStart();
+    setIsLoading(true);
+
     try {
-      console.log("Submitting registration form:", data)
+      console.log("Submitting registration form:", data);
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Registration failed")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
       }
 
       // Sign in the user after successful registration
@@ -42,33 +49,33 @@ export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRe
         redirect: false,
         email: data.email,
         password: data.password,
-      })
+      });
 
-      if (result.error) {
-        throw new Error(result.error)
+      if (result?.error) {
+        throw new Error(result.error);
       }
 
       toast({
         title: "Success",
         description: "Registration successful! Redirecting...",
-      })
+      });
 
-      onRegistrationComplete()
-      router.push("/dashboard")
+      onRegistrationComplete();
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Registration error:", error)
+      console.error("Registration error:", error);
 
       toast({
         title: "Registration Failed",
-        description: error.message || "An unexpected error occurred.",
+        description: (error as Error).message || "An unexpected error occurred.", // ✅ Fixed TypeScript error
         variant: "destructive",
-      })
+      });
 
-      onRegistrationError(error.message || "An unexpected error occurred during registration.")
+      onRegistrationError((error as Error).message || "An unexpected error occurred during registration.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -108,5 +115,5 @@ export function RegisterForm({ onRegistrationStart, onRegistrationComplete, onRe
         {isLoading ? <LoadingSpinner /> : "Register"}
       </Button>
     </form>
-  )
+  );
 }

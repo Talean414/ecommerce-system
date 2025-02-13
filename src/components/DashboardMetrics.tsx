@@ -1,7 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, ShoppingBag, Package, Users } from 'lucide-react'
 
-export function DashboardMetrics({ data }) {
+interface DashboardMetricsProps {
+  data: {
+    totalRevenue: number;
+    totalOrders: number;
+    totalProducts: number;
+    userCount: number;
+  };
+}
+
+export function DashboardMetrics({ data }: DashboardMetricsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <Card>

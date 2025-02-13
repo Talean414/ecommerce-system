@@ -8,7 +8,11 @@ export async function GET() {
     console.log('Categories fetched successfully:', categories);
     return NextResponse.json({ categories });
   } catch (error) {
-    console.error('Error fetching categories:', error.message, error.stack);
+    if (error instanceof Error) {
+      console.error('Error fetching categories:', error.message, error.stack);
+    } else {
+      console.error('Unknown error fetching categories:', error);
+    }
     return NextResponse.json({ error: 'Internal Server Error', categories: [] }, { status: 500 });
   }
 }
@@ -26,13 +30,18 @@ export async function POST(request: Request) {
     const category = await prisma.category.create({
       data: {
         name: body.name,
+        updatedAt: new Date(), // ✅ Fix: Prisma requires updatedAt
       },
     });
 
     console.log('Category created successfully:', category);
     return NextResponse.json(category);
   } catch (error) {
-    console.error('Error creating category:', error.message, error.stack);
+    if (error instanceof Error) {
+      console.error('Error creating category:', error.message, error.stack);
+    } else {
+      console.error('Unknown error creating category:', error);
+    }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

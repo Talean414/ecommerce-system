@@ -5,7 +5,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button'
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([])
+  interface User {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+  }
+
+  const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

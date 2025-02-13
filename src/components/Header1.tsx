@@ -5,8 +5,8 @@ import { useSession, signOut } from "next-auth/react"
 import { useState } from "react"
 import { ShoppingCart, User, Menu, X } from "lucide-react"
 import { SearchBar } from "./SearchBar"
-import { ThemeSwitcher } from "./ThemeSwitcher"
 import { Button } from "@/components/ui/button"
+// Removed ThemeSwitcher import and functionality
 
 export default function Header() {
   const { data: session } = useSession()
@@ -39,7 +39,6 @@ export default function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <ThemeSwitcher />
           <Link href="/cart" className="text-foreground hover:text-primary transition-colors duration-300">
             <ShoppingCart className="hover-lift" />
           </Link>
@@ -50,42 +49,42 @@ export default function Header() {
           ) : (
             <div className="relative">
               <Button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                variant="ghost"
-                className="flex items-center space-x-2"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          variant="ghost"
+          className="flex items-center space-x-2"
               >
-                <User className="hover-lift" />
-                <span className="hidden md:inline">{session.user.name}</span>
+          <User className="hover-lift" />
+          <span className="hidden md:inline">{session.user.name}</span>
               </Button>
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-background rounded-md shadow-lg py-1 z-50 animate-fadeIn border border-border">
-                  <Link
-                    href="/profile"
-                    className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/orders"
-                    className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
-                  >
-                    Orders
-                  </Link>
-                  {session.user.role === "ADMIN" && (
-                    <Link
-                      href="/admin"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => signOut()}
-                    className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
-                  >
-                    Sign out
-                  </button>
-                </div>
+          <div className="absolute right-0 mt-2 w-48 bg-background rounded-md shadow-lg py-1 z-50 animate-fadeIn border border-border">
+            <Link
+              href="/profile"
+              className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
+            >
+              Profile
+            </Link>
+            <Link
+              href="/orders"
+              className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
+            >
+              Orders
+            </Link>
+            {session.user.role === "ADMIN" && (
+              <Link
+                href="/admin"
+                className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
+              >
+                Admin Dashboard
+              </Link>
+            )}
+            <button
+              onClick={() => signOut()}
+              className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors duration-300"
+            >
+              Sign out
+            </button>
+          </div>
               )}
             </div>
           )}

@@ -143,6 +143,7 @@ model user {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime
   verified     Boolean        @default(false) // New field to track verification status
+  emailVerified DateTime? // Add this line (optional)
   cart         cart?
   notification notification[]
   order        order[]
@@ -162,12 +163,20 @@ model wishlistitem {
   @@index([productId], map: "WishlistItem_productId_fkey")
 }
 
+model NewsletterSubscriber {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  createdAt DateTime @default(now())
+}
+
+
 enum order_status {
   PENDING
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  COMPLETED
 }
 
 enum payment_status {

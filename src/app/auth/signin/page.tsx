@@ -10,17 +10,18 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const { toast } = useToast();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
       const result = await signIn("credentials", {
@@ -29,15 +30,15 @@ export default function SignInPage() {
         password: data.password,
       });
 
-      if (result.error) {
+      if (result?.error) {
         throw new Error(result.error);
       }
 
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Something went wrong",
         variant: "destructive",
       });
     } finally {
