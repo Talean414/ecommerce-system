@@ -2,23 +2,20 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
-import { order_status } from "@prisma/client"; // ✅ Import the order_status enum correctly
+import { order_status } from "@prisma/client"; // ✅ Ensure Prisma enums are properly generated
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "ADMIN") {
+    const session = await getServerSession(authOptions).catch(() => null);
+    if (!session || session?.user?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    // Test database connection
-    await prisma.$connect();
 
     // Fetch admin dashboard metrics
     const [totalRevenue, totalOrders, totalProducts, lowStockProducts, recentOrders, userCount] = await Promise.all([
       prisma.order.aggregate({
         _sum: { total: true },
-        where: { status: order_status.COMPLETED }, // ✅ Correct enum usage
+        where: { status: order_status?.COMPLETED }, // ✅ Make sure it's not undefined
       }),
       prisma.order.count(),
       prisma.product.count(),
@@ -42,21 +39,11 @@ export async function GET() {
       recentOrders,
       userCount,
     });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error in admin dashboard GET route:", error.message);
-      return NextResponse.json(
-        { error: "Internal Server Error", details: error.message },
-        { status: 500 }
-      );
-    } else {
-      console.error("Unknown error in admin dashboard GET route:", error);
-      return NextResponse.json(
-        { error: "Internal Server Error" },
-        { status: 500 }
-      );
-    }
-  } finally {
-    await prisma.$disconnect(); // ✅ Ensures Prisma disconnects after execution
+  } catch (error) {
+    console.error("Error in admin dashboard GET route:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
