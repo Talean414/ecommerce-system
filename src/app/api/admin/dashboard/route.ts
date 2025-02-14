@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
-import { order_status } from "@prisma/client"; // Import the order_status enum
+import { order_status } from "@prisma/client"; // ✅ Import the order_status enum correctly
 
 export async function GET() {
   try {
@@ -18,7 +18,7 @@ export async function GET() {
     const [totalRevenue, totalOrders, totalProducts, lowStockProducts, recentOrders, userCount] = await Promise.all([
       prisma.order.aggregate({
         _sum: { total: true },
-        where: { status: order_status.COMPLETED }, // Use the correct enum value
+        where: { status: order_status.COMPLETED }, // ✅ Correct enum usage
       }),
       prisma.order.count(),
       prisma.product.count(),
@@ -43,7 +43,6 @@ export async function GET() {
       userCount,
     });
   } catch (error: unknown) {
-    // Narrow down the type of 'error' to ensure it is an instance of Error
     if (error instanceof Error) {
       console.error("Error in admin dashboard GET route:", error.message);
       return NextResponse.json(
@@ -58,6 +57,6 @@ export async function GET() {
       );
     }
   } finally {
-    await prisma.$disconnect(); // Disconnect from the database
+    await prisma.$disconnect(); // ✅ Ensures Prisma disconnects after execution
   }
 }
