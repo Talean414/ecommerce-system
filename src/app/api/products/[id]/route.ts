@@ -6,7 +6,7 @@ import { writeFile } from "fs/promises";
 import path from "path";
 
 // ✅ Update Product (PUT)
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,7 +14,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
   try {
     const formData = await request.formData();
-    const id = Number(params.id); // ✅ Convert ID to number
+
+    // ✅ Extract product ID from URL
+    const url = new URL(request.url);
+    const id = Number(url.pathname.split("/").pop()); // Get last part of the URL as ID
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
     }
@@ -23,7 +26,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const price = Number.parseFloat(formData.get("price") as string);
     const stock = Number.parseInt(formData.get("stock") as string);
     const description = formData.get("description") as string;
-    const image = formData.get("image") as File;
+    const image = formData.get("image") as File | null;
 
     let imagePath = null;
     if (image) {
@@ -55,14 +58,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // ✅ Delete Product (DELETE)
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const id = Number(params.id); // ✅ Convert ID to number
+    // ✅ Extract product ID from URL
+    const url = new URL(request.url);
+    const id = Number(url.pathname.split("/").pop()); // Get last part of the URL as ID
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
     }
