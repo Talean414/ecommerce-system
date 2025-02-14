@@ -38,7 +38,8 @@ export default function ProductManagement() {
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/products");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`,);
+        
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -71,7 +72,9 @@ export default function ProductManagement() {
       formData.append("image", data.image[0]);
     }
 
-    const url = isEditing ? `/api/products/${editingProduct?.id}` : "/api/products";
+    const url = isEditing
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/products/${editingProduct?.id}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -121,7 +124,9 @@ export default function ProductManagement() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`, {
+        method: "DELETE",
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

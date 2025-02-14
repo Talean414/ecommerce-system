@@ -22,7 +22,7 @@ export function PlaceOrderForm() {
   const onSubmit = async (data: OrderData) => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

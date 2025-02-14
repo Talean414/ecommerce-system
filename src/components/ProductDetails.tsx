@@ -40,7 +40,7 @@ export function ProductDetails({ product }: { product: Product }) {
     }
 
     try {
-      const response = await fetch("/api/cart", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id, quantity }),
@@ -87,7 +87,7 @@ export function ProductDetails({ product }: { product: Product }) {
     }
 
     try {
-      const response = await fetch("/api/wishlist", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id }),

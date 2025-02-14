@@ -25,7 +25,7 @@ export default function UserProfile({ user }: { user: User }) {
   }
 
   const onSubmit = async (data: FormData) => {
-    const response = await fetch('/api/user/profile', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -30,7 +30,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await fetch("/api/cart");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`);
         const data = await response.json();
 
         console.log("Fetched Cart Data:", data); // Debugging log
@@ -92,7 +92,7 @@ export default function CheckoutPage() {
       }
 
       try {
-        const response = await fetch("/api/mpesa/stkpush", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/mpesa/stkpush`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

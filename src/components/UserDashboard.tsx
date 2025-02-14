@@ -69,7 +69,9 @@ useEffect(() => {
   // Function to fetch user metrics
   const fetchUserMetrics = async () => {
     try {
-      const response = await fetch("/api/user/metrics");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/metrics`, {
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setUserMetrics(data);
@@ -94,7 +96,8 @@ useEffect(() => {
         return;
       }
       const userEmail = session.user.email;
-      const response = await axios.post("/api/auth/send-otp", { email: userEmail });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-otp`, { email: userEmail });
+      
       if (response.status === 200) {
         setModalMessage("OTP sent successfully! Please check your email.");
         setModalType("success");

@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     const content = formData.get("content") as string;
 
     try {
-      const response = await fetch("/api/admin/send-newsletter", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/send-newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject, content }),

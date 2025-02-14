@@ -49,7 +49,9 @@ export function AdminOrderManagement() {
   const fetchOrders = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/admin/orders')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/orders`, {
+        cache: 'no-store',
+      })
       if (!response.ok) {
         throw new Error('Failed to fetch orders')
       }

@@ -54,7 +54,7 @@ export function Checkout({ cartItems, total }: CheckoutProps) {
 
     setIsProcessing(true);
     try {
-      const response: ApiResponse = await fetch('/api/orders', {
+      const response: ApiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, cartItems, total }),

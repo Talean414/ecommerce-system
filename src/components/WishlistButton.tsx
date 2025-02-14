@@ -14,7 +14,7 @@ export function WishlistButton({ productId }: { productId: string }) {
   // Define checkWishlist using useCallback to avoid dependency issues
   const checkWishlist = useCallback(async () => {
     try {
-      const response = await fetch(`/api/wishlist?productId=${productId}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist?productId=${productId}`);
       const data = await response.json()
       setIsInWishlist(data.isInWishlist)
     } catch (error) {
@@ -35,7 +35,7 @@ export function WishlistButton({ productId }: { productId: string }) {
     }
 
     try {
-      const response = await fetch('/api/wishlist', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId }),

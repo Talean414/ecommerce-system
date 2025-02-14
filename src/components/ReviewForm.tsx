@@ -22,7 +22,8 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
   }
 
   const onSubmit = async (data: FormData) => {
-    const response: ApiResponse = await fetch('/api/reviews', {
+    const response: ApiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
+    
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

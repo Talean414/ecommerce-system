@@ -50,7 +50,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ onOtpSubmit, onOtpError }) => {
 
     try {
       // Send OTP for verification to your backend API
-      const response = await fetch("/api/auth/verifyOtp", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verifyOtp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ otp, email }),

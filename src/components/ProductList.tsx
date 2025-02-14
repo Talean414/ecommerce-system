@@ -39,7 +39,9 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/products?page=${currentPage}&category=${category}&search=${search}`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products?page=${currentPage}&category=${category}&search=${search}`);
+        
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
@@ -62,7 +64,8 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
   // ✅ Add to Cart Function
   const addToCart = async (productId: string) => {
     try {
-      const response = await fetch("/api/cart", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity: 1 }),

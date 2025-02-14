@@ -33,7 +33,9 @@ export function Cart() {
   const fetchCartItems = useCallback(async () => {
     setIsLoading(true)
     try {
-      const response = await fetch("/api/cart")
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
+        cache: "no-store",
+      })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -59,7 +61,7 @@ export function Cart() {
   const incrementQuantity = async (productId: string) => {
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/cart/increment`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/increment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +95,7 @@ export function Cart() {
   const decrementQuantity = async (productId: string) => {
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/cart/decrement`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/decrement`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +129,7 @@ export function Cart() {
   const removeItem = async (productId: string) => {
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/cart/delete`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

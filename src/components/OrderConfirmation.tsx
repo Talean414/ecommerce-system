@@ -21,7 +21,9 @@ export function OrderConfirmation() {
 
   useEffect(() => {
     const fetchLatestOrder = async () => {
-      const response = await fetch('/api/orders?limit=1')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders?limit=1`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+      })
       if (response.ok) {
         const orders = await response.json()
         if (orders.length > 0) {

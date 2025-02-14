@@ -28,16 +28,17 @@ export function Wishlist({ items = [], onUpdateWishlist }: WishlistProps) {
 
   const fetchWishlistItems = async () => {
     setIsLoading(true);
-    const response = await fetch('/api/wishlist');
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`);
     const data = await response.json();
     setWishlistItems(data);
     setIsLoading(false);
   };
 
   const removeFromWishlist = async (productId: number): Promise<void> => {
-    const response = await fetch(`/api/wishlist/${productId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${productId}`, {
       method: 'DELETE',
     });
+
 
     if (response.ok) {
       fetchWishlistItems();
@@ -48,7 +49,7 @@ export function Wishlist({ items = [], onUpdateWishlist }: WishlistProps) {
   };
 
   const addToCart = async (productId: number): Promise<void> => {
-    const response = await fetch('/api/cart', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ export default function Newsletter() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/newsletter", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

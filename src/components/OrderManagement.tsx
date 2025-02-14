@@ -21,7 +21,7 @@ export default function OrderManagement() {
 
   const fetchOrders = async () => {
     setIsLoading(true)
-    const response = await fetch('/api/orders')
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`)
     const data = await response.json()
     setOrders(data)
     setIsLoading(false)

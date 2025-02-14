@@ -30,10 +30,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
             <div className="flex space-x-4">
-              <a href="#" className="text-white hover:text-blue-400"><i className="fab fa-facebook-f"></i></a>
-              <a href="#" className="text-white hover:text-blue-400"><i className="fab fa-twitter"></i></a>
-              <a href="#" className="text-white hover:text-blue-400"><i className="fab fa-instagram"></i></a>
-              <a href="#" className="text-white hover:text-blue-400"><i className="fab fa-linkedin-in"></i></a>
+              <a href="#" className="text-white hover:text-blue-400" title="Facebook"><i className="fab fa-facebook-f"></i></a>
+              <a href="#" className="text-white hover:text-blue-400" title="Twitter"><i className="fab fa-twitter"></i></a>
+              <a href="#" className="text-white hover:text-blue-400" title="Instagram"><i className="fab fa-instagram"></i></a>
+              <a href="#" className="text-white hover:text-blue-400" title="LinkedIn"><i className="fab fa-linkedin-in"></i></a>
             </div>
           </div>
         </div>

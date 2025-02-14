@@ -1,7 +1,9 @@
 import { ProductList } from "@/components/ProductList";
 
 async function getProducts() {
-  const res = await fetch("/api/products");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  
+  const res = await fetch(`${API_URL}/api/products`, { cache: "no-store" }); // Disable caching for fresh data
   if (!res.ok) throw new Error("Failed to fetch products");
 
   const data = await res.json();

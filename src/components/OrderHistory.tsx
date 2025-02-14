@@ -19,7 +19,9 @@ export function OrderHistory({ limit }: { limit?: number }) {
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/orders${limit ? `?limit=${limit}` : ""}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders${limit ? `?limit=${limit}` : ""}`, {
+        cache: "no-store", // Ensures fresh data is always fetched
+      });      
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }

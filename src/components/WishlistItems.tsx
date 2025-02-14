@@ -4,13 +4,29 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Trash2, ShoppingCart } from 'lucide-react'
 
-export function WishlistItems({ items = [], onUpdateWishlist }) {
+interface WishlistItem {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+}
+
+interface WishlistItemsProps {
+  items: WishlistItem[];
+  onUpdateWishlist: () => void;
+}
+
+export function WishlistItems({ items = [], onUpdateWishlist }: WishlistItemsProps) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const removeFromWishlist = async (productId) => {
+  interface RemoveFromWishlistResponse {
+    ok: boolean;
+  }
+
+  const removeFromWishlist = async (productId: string): Promise<void> => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/wishlist/${productId}`, {
+      const response: RemoveFromWishlistResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${productId}`, {
         method: 'DELETE',
       })
 
@@ -25,10 +41,14 @@ export function WishlistItems({ items = [], onUpdateWishlist }) {
     setIsLoading(false)
   }
 
-  const addToCart = async (productId) => {
+  interface AddToCartResponse {
+    ok: boolean;
+  }
+
+  const addToCart = async (productId: string): Promise<void> => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/cart', {
+      const response: AddToCartResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,6 +97,7 @@ export function WishlistItems({ items = [], onUpdateWishlist }) {
                   onClick={() => removeFromWishlist(item.id)}
                   disabled={isLoading}
                   className="text-red-500 hover:text-red-700"
+                  title="Remove from wishlist"
                 >
                   <Trash2 />
                 </button>
