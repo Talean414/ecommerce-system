@@ -62,10 +62,13 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json(updatedUser);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating profile:", error);
+
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    
     return NextResponse.json(
-      { error: "Failed to update profile", details: error.message },
+      { error: "Failed to update profile", details: errorMessage },
       { status: 500 }
     );
   }
